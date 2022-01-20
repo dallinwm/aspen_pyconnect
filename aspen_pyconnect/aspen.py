@@ -207,3 +207,33 @@ class IP21Connector(object):
         result = self.client.service.ExecuteSQL(sql)
         root = ET.fromstring(result)
         return self.parse_xml(root)
+    
+    def eol_quality(self, work_center):
+        parsed_data = []
+        sql = """SELECT
+    	    		H."Workcenter",
+	    	    	R."CHECK_NUMBER",
+			        R."SAMPLE_DATE_TIME",
+			        R."TAR_THICK",
+			        R."OVERALL_AVG" "EOL_Recovery",
+			        PC."R_Value",
+        			S."OVERALL_AVG" "EOL_Stiffness"
+        		FROM
+        			"EBRS"."AEBRS"."AEBRS"."TEST_STD_EOLTU" R,
+        			"EBRS"."AEBRS"."AEBRS"."PROD_MAT_CHAR" PC,
+        			"EBRS"."AEBRS"."AEBRS"."TEST_STD_STIFF" S,
+        			"EBRS"."AEBRS"."AEBRS"."HEADER" H
+        		WHERE R.SAMPLE_DATE_TIME > '01-JAN-2022'
+        		AND R.Check_Number = H.Check_Number
+        		and H.Material_code = PC.Matnr
+        		and S.Check_number = H.Check_Number
+        		and H.Workcenter = '({work_center})'
+        		ORDER BY R.SAMPLE_DATE_TIME"""
+
+        #This is an example SQL query to pull quality data from separate tables
+        #By replacing the information within the """ and """ you should be able to complete simple SQL queries
+        
+        result = self.client.service.ExecuteSQL(sql)
+        parsed_data = self.parse_xml(ET.fromstring(result))
+        
+        return parsed_data
