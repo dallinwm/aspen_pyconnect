@@ -228,7 +228,7 @@ class IP21Connector(object):
         		and H.Material_code = PC.Matnr
         		and S.Check_number = H.Check_Number
         		and H.Workcenter = '({work_center})'
-        		ORDER BY R.SAMPLE_DATE_TIME"""
+        		ORDER BY R.SAMPLE_DATE_TIME""".format(work_center=work_center)
 
         #This is an example SQL query to pull quality data from separate tables
         #By replacing the information within the """ and """ you should be able to complete simple SQL queries
