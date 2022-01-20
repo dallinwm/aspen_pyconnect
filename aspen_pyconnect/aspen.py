@@ -213,22 +213,22 @@ class IP21Connector(object):
         sql = """SELECT
     	    		H."Workcenter",
 	    	    	R."CHECK_NUMBER",
-			        R."SAMPLE_DATE_TIME",
-			        R."TAR_THICK",
-			        R."OVERALL_AVG" "EOL_Recovery",
-			        PC."R_Value",
-        			S."OVERALL_AVG" "EOL_Stiffness"
-        		FROM
-        			"EBRS"."AEBRS"."AEBRS"."TEST_STD_EOLTU" R,
-        			"EBRS"."AEBRS"."AEBRS"."PROD_MAT_CHAR" PC,
-        			"EBRS"."AEBRS"."AEBRS"."TEST_STD_STIFF" S,
-        			"EBRS"."AEBRS"."AEBRS"."HEADER" H
-        		WHERE R.SAMPLE_DATE_TIME > '01-JAN-2022'
-        		AND R.Check_Number = H.Check_Number
-        		and H.Material_code = PC.Matnr
-        		and S.Check_number = H.Check_Number
-        		and H.Workcenter = '({work_center})'
-        		ORDER BY R.SAMPLE_DATE_TIME""".format(work_center=work_center)
+		        R."SAMPLE_DATE_TIME",
+		        R."TAR_THICK",
+		        R."OVERALL_AVG" "EOL_Recovery",
+		        PC."R_Value",
+       			S."OVERALL_AVG" "EOL_Stiffness"
+       		FROM
+       			"EBRS"."AEBRS"."AEBRS"."TEST_STD_EOLTU" R,
+       			"EBRS"."AEBRS"."AEBRS"."PROD_MAT_CHAR" PC,
+       			"EBRS"."AEBRS"."AEBRS"."TEST_STD_STIFF" S,
+       			"EBRS"."AEBRS"."AEBRS"."HEADER" H
+       		WHERE R.SAMPLE_DATE_TIME > '01-JAN-2022'
+       		AND R.Check_Number = H.Check_Number
+       		and H.Material_code = PC.Matnr
+       		and S.Check_number = H.Check_Number
+       		and H.Workcenter = '{work_center}'
+       		ORDER BY R.SAMPLE_DATE_TIME""".format(work_center=work_center)
 
         #This is an example SQL query to pull quality data from separate tables
         #By replacing the information within the """ and """ you should be able to complete simple SQL queries
