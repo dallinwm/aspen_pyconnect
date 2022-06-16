@@ -30,7 +30,7 @@ from datetime import datetime
 data = aspen.history(
     start_time=datetime(2020, 1, 1),
     end_time=datetime.now(),
-    name='TAG_NAME',
+    tag_name='TAG_NAME',
     period='01:00:00',
     stepped=0
 )
