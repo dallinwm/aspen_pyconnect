@@ -207,32 +207,53 @@ class IP21Connector(object):
         result = self.client.service.ExecuteSQL(sql)
         root = ET.fromstring(result)
         return self.parse_xml(root)
-    
-    def eol_quality(self, work_center):
-        parsed_data = []
-        sql = """SELECT
-    	    		H."Workcenter",
-	    	    	R."CHECK_NUMBER",
-		        R."SAMPLE_DATE_TIME",
-		        R."TAR_THICK",
-		        R."OVERALL_AVG" "EOL_Recovery",
-		        PC."R_Value",
-       			S."OVERALL_AVG" "EOL_Stiffness"
-       		FROM
-       			"EBRS"."AEBRS"."AEBRS"."TEST_STD_EOLTU" R,
-       			"EBRS"."AEBRS"."AEBRS"."PROD_MAT_CHAR" PC,
-       			"EBRS"."AEBRS"."AEBRS"."TEST_STD_STIFF" S,
-       			"EBRS"."AEBRS"."AEBRS"."HEADER" H
-       		WHERE R.SAMPLE_DATE_TIME > '01-JAN-2022'
-       		AND R.Check_Number = H.Check_Number
-       		and H.Material_code = PC.Matnr
-       		and S.Check_number = H.Check_Number
-       		and H.Workcenter = '{work_center}'
-       		ORDER BY R.SAMPLE_DATE_TIME""".format(work_center=work_center)
 
-        #This is an example SQL query to pull quality data from separate tables
-        #By replacing the information within the """ and """ you should be able to complete simple SQL queries
+	#Def to run a pre-made SQL query file
+    def external_sql(self, file):
+        parsed_data = []
+        with open(file, 'r') as data_file:
+            data = data_file.read()
+        sql = data
+
+        result = self.client.service.ExecuteSQL(sql)
+        parsed_data = self.parse_xml(ET.fromstring(result))
         
+        return parsed_data
+
+	#Def to get last value from aggregate table (Max, Min, Avg, etc)
+    def agg_value(self, tag_name, timestamp=datetime.now()-timedelta(minutes=5)):
+        timestamp = self.convert_to_aspen_dt(timestamp)
+	parsed_data = []
+
+        sql = """
+		SELECT
+			AVG
+		FROM 
+			Aggregates
+		WHERE 
+			name = '{tag_name}'
+			and Period = 00:05
+			and TS_Start > '{ts}'
+			order by TS_Start desc""".format(tag_name=tag_name, timestamp=timestamp)
+
+        result = self.client.service.ExecuteSQL(sql)
+        parsed_data = self.parse_xml(ET.fromstring(result))
+        
+        return parsed_data
+
+	#Def to get last values from IP_Trend_Value table
+    def get_trend_value(self, tag_name, timestamp=datetime.now()-timedelta(minutes=5)):
+        timestamp = self.convert_to_aspen_dt(timestamp)
+	parsed_data = []
+
+        sql = """
+		SELECT 
+			IP_TREND_VALUE
+		FROM 
+			'{tag_name}'
+		WHERE 
+			IP_TREND_TIME > '{ts}'""".format(timestamp=timestamp, tag_name=tag_name)
+
         result = self.client.service.ExecuteSQL(sql)
         parsed_data = self.parse_xml(ET.fromstring(result))
         
